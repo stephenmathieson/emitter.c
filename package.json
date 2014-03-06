@@ -1,6 +1,6 @@
 {
   "name": "emitter.c",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "src": [
     "src/emitter.c",
