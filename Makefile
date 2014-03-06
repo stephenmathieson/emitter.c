@@ -9,6 +9,9 @@ test: test.o $(OBJS)
 	$(CC) $^ -o $@ $(CFLAGS)
 	./$@
 
+example: example.o $(OBJS)
+	$(CC) $^ -o $@ $(CFLAGS)
+
 %.o: %.c
 	$(CC) $< -c -o $@ $(CFLAGS)
 
