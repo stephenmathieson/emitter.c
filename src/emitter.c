@@ -40,7 +40,10 @@ listener_new(const char *event, emitter_cb *fn) {
 emitter_t *
 emitter_new() {
   emitter_t *self = malloc(sizeof(emitter_t));
-  if (self) self->listeners = list_new();
+  if (self) {
+    list_t *listeners = self->listeners = list_new();
+    if (listeners) listeners->free = free;
+  }
   return self;
 }
 
