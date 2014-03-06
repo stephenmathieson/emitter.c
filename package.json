@@ -1,0 +1,12 @@
+{
+  "name": "emitter.c",
+  "version": "0.0.0",
+  "license": "MIT",
+  "src": [
+    "src/emitter.c",
+    "src/emitter.h"
+  ],
+  "dependencies": {
+    "list": "*"
+  }
+}
