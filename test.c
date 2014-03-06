@@ -26,8 +26,6 @@ static int invocations = 0;
 static void
 on_foo(void *data) {
   ++invocations;
-  // make gcc shutup:
-  data = NULL;
 }
 
 typedef struct {
@@ -59,6 +57,7 @@ TEST(emit_unregistered_event) {
 TEST(register_and_emit) {
   emitter_t *emitter = emitter_new();
   assert(emitter);
+  invocations = 0;
   assert(0 == emitter_on(emitter, "foo", &on_foo));
   for (int i = 0; i < 10; i++)
     assert(0 == emitter_emit(emitter, "foo", NULL));
@@ -70,11 +69,9 @@ TEST(emit_event_with_data) {
   emitter_t *emitter = emitter_new();
   assert(emitter);
   assert(0 == emitter_on(emitter, "bar", &on_bar));
-  bar_data_t *bar = malloc(sizeof(bar_data_t));
-  bar->a = 1;
-  bar->b = 14;
-  assert(0 == emitter_emit(emitter, "bar", (void *) bar));
-  assert(15 == bar->c);
+  bar_data_t bar = { 1, 14, 0 };
+  assert(0 == emitter_emit(emitter, "bar", (void *) &bar));
+  assert(15 == bar.c);
   emitter_destroy(emitter);
 }
 
