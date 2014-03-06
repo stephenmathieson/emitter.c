@@ -1,4 +1,10 @@
 
+//
+// emitter.c
+//
+// Copyright (c) 2014 Stephen Mathieson <me@stephenmathieson.com>
+//
+
 #include <stdlib.h>
 #include <string.h>
 #include "emitter.h"
@@ -37,6 +43,10 @@ listener_new(const char *event, emitter_cb *fn) {
   return self;
 }
 
+/**
+ * Create a new emitter.
+ */
+
 emitter_t *
 emitter_new() {
   emitter_t *self = malloc(sizeof(emitter_t));
@@ -47,11 +57,19 @@ emitter_new() {
   return self;
 }
 
+/**
+ * Destroy an emitter.
+ */
+
 void
 emitter_destroy(emitter_t *self) {
   if (self->listeners) list_destroy(self->listeners);
   free(self);
 }
+
+/**
+ * Emit an event.
+ */
 
 int
 emitter_emit(emitter_t *self, const char *event, void *data) {
@@ -67,6 +85,10 @@ emitter_emit(emitter_t *self, const char *event, void *data) {
   list_iterator_destroy(iterator);
   return 0;
 }
+
+/**
+ * Listen for an event.
+ */
 
 int
 emitter_on(emitter_t *self, const char *event, emitter_cb *cb) {

@@ -1,4 +1,10 @@
 
+//
+// emitter.h
+//
+// Copyright (c) 2014 Stephen Mathieson <me@stephenmathieson.com>
+//
+
 #ifndef EMITTER_H
 #define EMITTER_H 1
 
