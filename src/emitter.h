@@ -63,4 +63,13 @@ emitter_emit(emitter_t *self, const char *event, void *data);
 int
 emitter_on(emitter_t *self, const char *event, emitter_cb *cb);
 
+/**
+ * Remove `event` listener `cb`, or all listeners for `event`.
+ *
+ * Returns -1 on failure.
+ */
+
+int
+emitter_off(emitter_t *self, const char *event, emitter_cb *cb);
+
 #endif

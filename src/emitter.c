@@ -99,3 +99,27 @@ emitter_on(emitter_t *self, const char *event, emitter_cb *cb) {
   if (NULL == list_rpush(self->listeners, node)) return -1;
   return 0;
 }
+
+int
+emitter_off(emitter_t *self, const char *event, emitter_cb *cb) {
+  list_iterator_t *iterator = list_iterator_new(self->listeners, LIST_TAIL);
+  if (NULL == iterator) return -1;
+
+  list_node_t *node;
+  while ((node = list_iterator_next(iterator))) {
+    listener_t *listener = (listener_t *) node->val;
+    if (strcmp(event, listener->event)) continue;
+
+    if (cb) {
+      if (cb == listener->fn) {
+        list_remove(self->listeners, node);
+        break;
+      }
+    } else {
+      list_remove(self->listeners, node);
+    }
+  }
+
+  list_iterator_destroy(iterator);
+  return 0;
+}
