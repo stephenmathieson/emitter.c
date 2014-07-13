@@ -1,4 +1,10 @@
 
+0.2.0 / 2014-07-13 
+==================
+
+  * .travis.yml: Install development deps
+  * Add support for configurable event comparison (#1)
+
 0.1.0 / 2014-03-17
 ==================
 
