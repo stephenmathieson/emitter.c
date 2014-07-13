@@ -31,7 +31,8 @@ typedef struct {
   list_t *listeners;
 
   /**
-   * Event comprison function.
+   * Event comparison function.  Must return `0` if
+   * the two provided `char *`s  match.
    */
 
   emitter_cmp cmp;
