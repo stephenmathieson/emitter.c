@@ -16,6 +16,8 @@
 
 typedef void (emitter_cb)(void *data);
 
+typedef int (*emitter_cmp)(const char *a, const char *b);
+
 /**
  * Emitter type.
  */
@@ -27,6 +29,12 @@ typedef struct {
    */
 
   list_t *listeners;
+
+  /**
+   * Event comprison function.
+   */
+
+  emitter_cmp cmp;
 
 } emitter_t;
 

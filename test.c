@@ -1,7 +1,8 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include "src/emitter.h"
+#include "emitter.h"
+#include "wildcardcmp/wildcardcmp.h"
 
 #define TEST(name) \
   static void test_##name(void)
@@ -27,6 +28,11 @@ static void
 on_bar(void *data) {
   bar_data_t *thing = (bar_data_t *) data;
   thing->c = thing->a + thing->b;
+}
+
+static int
+cmp_fn(const char *a, const char *b) {
+  return !wildcardcmp(a, b);
 }
 
 TEST(new_emitter) {
@@ -116,6 +122,22 @@ TEST(off_all_listeners) {
   emitter_destroy(emitter);
 }
 
+TEST(custom_cmp_function) {
+  emitter_t *emitter = emitter_new();
+  assert(emitter);
+  emitter->cmp = cmp_fn;
+  invocations = 0;
+  assert(0 == emitter_on(emitter, "foo*", &on_foo));
+
+  assert(0 == emitter_emit(emitter, "foo", NULL));
+  assert(0 == emitter_emit(emitter, "foobar", NULL));
+  assert(0 == emitter_emit(emitter, "foobaz", NULL));
+  assert(0 == emitter_emit(emitter, "blahfoo", NULL));
+
+  assert(3 == invocations);
+  emitter_destroy(emitter);
+}
+
 int
 main() {
   printf("\n  \e[36m%s\e[0m\n", "emitter");
@@ -127,6 +149,7 @@ main() {
   RUN_TEST(on_then_off);
   RUN_TEST(off_actually_removes);
   RUN_TEST(off_all_listeners);
+  RUN_TEST(custom_cmp_function);
   printf("\n");
   return 0;
 }

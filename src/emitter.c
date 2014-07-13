@@ -43,6 +43,11 @@ listener_new(const char *event, emitter_cb *fn) {
   return self;
 }
 
+static int
+default_cmp(const char *a, const char *b) {
+  return strcmp(a, b);
+}
+
 /**
  * Create a new emitter.
  */
@@ -51,6 +56,7 @@ emitter_t *
 emitter_new() {
   emitter_t *self = malloc(sizeof(emitter_t));
   if (self) {
+    self->cmp = default_cmp;
     list_t *listeners = self->listeners = list_new();
     if (listeners) listeners->free = free;
   }
@@ -79,7 +85,7 @@ emitter_emit(emitter_t *self, const char *event, void *data) {
   list_node_t *node;
   while ((node = list_iterator_next(iterator))) {
     listener_t *listener = (listener_t *) node->val;
-    if (0 == strcmp(event, listener->event)) listener->fn(data);
+    if (0 == self->cmp(listener->event, event)) listener->fn(data);
   }
 
   list_iterator_destroy(iterator);

@@ -8,5 +8,8 @@
   ],
   "dependencies": {
     "list": "*"
+  },
+  "development": {
+    "wildcardcmp": "*"
   }
 }

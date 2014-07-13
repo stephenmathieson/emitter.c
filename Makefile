@@ -5,6 +5,7 @@ SRC = $(wildcard src/*.c)
 SRC += $(wildcard deps/*/*.c)
 OBJS = $(SRC:.c=.o)
 
+test.o: CFLAGS += -Isrc
 test: test.o $(OBJS)
 	$(CC) $^ -o $@ $(CFLAGS)
 	./$@
