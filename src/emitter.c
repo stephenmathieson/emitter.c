@@ -13,6 +13,11 @@
  * Private listener type.
  */
 
+typedef enum {
+  LISTENER_TYPE_ON,
+  LISTENER_TYPE_ONCE
+} listener_type_t;
+
 typedef struct {
 
   /**
@@ -27,7 +32,18 @@ typedef struct {
 
   const char *event;
 
+  /**
+   * The type of listener
+   */
+  listener_type_t type;
 } listener_t;
+
+/**
+ * Helper functions
+ */
+
+static int _emitter_listen_generic(emitter_t *self, const char *event, emitter_cb *cb, listener_type_t type);
+static int _remove_listener(emitter_t *self, listener_t *listener);
 
 /**
  * Create a new listener.
@@ -39,6 +55,7 @@ listener_new(const char *event, emitter_cb *fn) {
   if (self) {
     self->fn = fn;
     self->event = event;
+    self->type = LISTENER_TYPE_ON; // default value
   }
   return self;
 }
@@ -85,7 +102,28 @@ emitter_emit(emitter_t *self, const char *event, void *data) {
   list_node_t *node;
   while ((node = list_iterator_next(iterator))) {
     listener_t *listener = (listener_t *) node->val;
-    if (0 == self->cmp(listener->event, event)) listener->fn(data);
+    if (0 == self->cmp(listener->event, event)) {
+      listener->fn(data);
+      if(listener->type == LISTENER_TYPE_ONCE) {
+        _remove_listener(self, listener);
+      }
+    }
+  }
+
+  list_iterator_destroy(iterator);
+  return 0;
+}
+
+static int _remove_listener(emitter_t *self, listener_t *listener) {
+  list_iterator_t *iterator = list_iterator_new(self->listeners, LIST_TAIL);
+  if (NULL == iterator) return -1;
+
+  list_node_t *node;
+  while ((node = list_iterator_next(iterator))) {
+    if(listener != (listener_t *) node->val)
+      continue;
+
+    list_remove(self->listeners, node);
   }
 
   list_iterator_destroy(iterator);
@@ -96,14 +134,25 @@ emitter_emit(emitter_t *self, const char *event, void *data) {
  * Listen for an event.
  */
 
-int
-emitter_on(emitter_t *self, const char *event, emitter_cb *cb) {
+static int
+_emitter_listen_generic(emitter_t *self, const char *event, emitter_cb *cb, listener_type_t type) {
   listener_t *listener = NULL;
   list_node_t *node = NULL;
   if (!(listener = listener_new(event, cb))) return -1;
   if (!(node = list_node_new(listener))) return -1;
   if (NULL == list_rpush(self->listeners, node)) return -1;
+  listener->type = type;
   return 0;
+}
+
+int
+emitter_on(emitter_t *self, const char *event, emitter_cb *cb) {
+  return _emitter_listen_generic(self, event, cb, LISTENER_TYPE_ON);
+}
+
+int
+emitter_once(emitter_t *self, const char *event, emitter_cb *cb) {
+  return _emitter_listen_generic(self, event, cb, LISTENER_TYPE_ONCE);
 }
 
 int

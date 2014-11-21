@@ -21,6 +21,13 @@ typedef struct {
 
 static void
 on_foo(void *data) {
+  (void)data;
+  ++invocations;
+}
+
+static void
+once_foo(void *data) {
+  (void)data;
   ++invocations;
 }
 
@@ -65,6 +72,29 @@ TEST(register_and_emit) {
   for (int i = 0; i < 10; i++)
     assert(0 == emitter_emit(emitter, "foo", NULL));
   assert(10 == invocations);
+  emitter_destroy(emitter);
+}
+
+TEST(register_and_emit_once) {
+  emitter_t *emitter = emitter_new();
+  assert(emitter);
+  invocations = 0;
+  assert(0 == emitter_once(emitter, "foo", &once_foo));
+  for (int i = 0; i < 2; i++)
+    assert(0 == emitter_emit(emitter, "foo", NULL));
+  assert(1 == invocations);
+  emitter_destroy(emitter);
+}
+
+TEST(register_and_emit_once_advanced) {
+  emitter_t *emitter = emitter_new();
+  assert(emitter);
+  invocations = 0;
+  assert(0 == emitter_on(emitter, "foo", &once_foo));
+  assert(0 == emitter_once(emitter, "foo", &once_foo));
+  for (int i = 0; i < 2; i++)
+    assert(0 == emitter_emit(emitter, "foo", NULL));
+  assert(3 == invocations);
   emitter_destroy(emitter);
 }
 
@@ -145,6 +175,8 @@ main() {
   RUN_TEST(on_new_event);
   RUN_TEST(emit_unregistered_event);
   RUN_TEST(register_and_emit);
+  RUN_TEST(register_and_emit_once);
+  RUN_TEST(register_and_emit_once_advanced);
   RUN_TEST(emit_event_with_data);
   RUN_TEST(on_then_off);
   RUN_TEST(off_actually_removes);
