@@ -1,4 +1,10 @@
 
+0.3.0 / 2014-11-21
+==================
+
+  * src: Add `emitter_once()` [fatihky, #6]
+  * travis: Update before installing deps
+
 0.2.0 / 2014-07-13 
 ==================
 
