@@ -9,6 +9,11 @@ typedef struct {
 } numbers_t;
 
 void
+once_foo(void *data) {
+  printf("once_foo called\n");
+}
+
+void
 on_foo(void *data) {
   numbers_t *num = (numbers_t *) data;
 
@@ -30,6 +35,8 @@ on_bar(void *data) {
 int
 main(void) {
   emitter_t *emitter = emitter_new();
+
+  emitter_once(emitter, "foo", &once_foo);
 
   emitter_on(emitter, "foo", &on_foo);
   emitter_on(emitter, "bar", &on_bar);

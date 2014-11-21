@@ -73,6 +73,15 @@ int
 emitter_on(emitter_t *self, const char *event, emitter_cb *cb);
 
 /**
+ * Register one time listener `cb` for `event`.
+ *
+ * Returns -1 on failure.
+ */
+
+int
+emitter_once(emitter_t *self, const char *event, emitter_cb *cb);
+
+/**
  * Remove `event` listener `cb`, or all listeners for `event`.
  *
  * Returns -1 on failure.
